@@ -1,98 +1,146 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { CategorySection } from "@/components/home/CategorySection";
+import { FeaturedProducts } from "@/components/home/FeaturedProducts";
+import { HeroSection } from "@/components/home/HeroSection";
+import { SearchBar } from "@/components/home/SearchBar";
+import { spacing } from "@/theme";
 
 export default function HomeScreen() {
+  const [search, setSearch] = useState("");
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <SafeAreaView edges={["top", "bottom"]} style={styles.safeArea}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
+        <HeroSection />
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        <SearchBar
+          value={search}
+          onChangeText={setSearch}
+          onPressFilter={() => {}}
+        />
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        <View style={styles.banner}>
+          <View style={styles.bannerContent}>
+            <Text style={styles.bannerEyebrow}>LIMITED TIME</Text>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+            <Text style={styles.bannerTitle}>Summer sale</Text>
+
+            <Text style={styles.bannerDescription}>
+              Up to 40% off selected products
+            </Text>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Shop summer sale"
+              style={({ pressed }) => [
+                styles.bannerButton,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.bannerButtonText}>Shop now</Text>
+
+              <MaterialIcons name="arrow-forward" size={17} color="#111827" />
+            </Pressable>
+          </View>
+
+          <View style={styles.bannerShape} pointerEvents="none">
+            <MaterialIcons
+              name="shopping-bag"
+              size={88}
+              color="rgba(255,255,255,0.20)"
+            />
+          </View>
+        </View>
+
+        <CategorySection />
+
+        <FeaturedProducts />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    backgroundColor: "#FFFFFF",
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
+
+  content: {
+    paddingBottom: spacing.huge,
+  },
+
+  banner: {
+    minHeight: 190,
+    marginHorizontal: spacing.xl,
+    marginTop: spacing.xxl,
+    padding: spacing.xl,
+    borderRadius: 24,
+    overflow: "hidden",
+    backgroundColor: "#4F7CFF",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  bannerContent: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
   },
-  title: {
-    textAlign: 'center',
+
+  bannerEyebrow: {
+    fontSize: 10,
+    fontWeight: "800",
+    letterSpacing: 1.5,
+    color: "rgba(255,255,255,0.75)",
   },
-  code: {
-    textTransform: 'uppercase',
+
+  bannerTitle: {
+    marginTop: spacing.sm,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: "900",
+    color: "#FFFFFF",
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+
+  bannerDescription: {
+    maxWidth: 190,
+    marginTop: spacing.sm,
+    fontSize: 13,
+    lineHeight: 19,
+    color: "rgba(255,255,255,0.82)",
+  },
+
+  bannerButton: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: spacing.lg,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
+  },
+
+  bannerButtonText: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "#111827",
+  },
+
+  bannerShape: {
+    width: 100,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  pressed: {
+    opacity: 0.75,
   },
 });
